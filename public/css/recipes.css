@@ -1,0 +1,147 @@
+/**
+ * Recipe Page Styles
+ * 
+ * This file contains the CSS styles for the recipe pages, including:
+ * - Recipe listing layout
+ * - Filter controls
+ * - Custom checkbox styling
+ * - Responsive grid layout
+ * 
+ * @package GreenGarnishLabs
+ * @version 1.0.0
+ */
+
+/* Import CSS variables */
+@import url('variables.css');
+
+/* Recipe Page Container */
+.recipe-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Recipe Page Title */
+.recipe-title {
+  text-align: center;
+  margin-top: 100px;
+}
+
+/* Filter Controls Container */
+.easy-filter {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  margin-bottom: 100px;
+}
+
+.easy-filter form {
+  width: 80%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+/* Filter Group Styling */
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  margin: 10px;
+  vertical-align: center;
+}
+
+/* Form Labels */
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 1rem;
+  height: 2rem;
+  line-height: 2rem;
+}
+
+/* Select Dropdown Styling */
+select {
+  width: 200px;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid var(--primary-text-color);
+  background: transparent;
+  color: var(--primary-text-color);
+}
+
+select option {
+  background: var(--primary-background);
+  color: var(--primary-text-color);
+  border: none;
+}
+
+/* Custom Checkbox Container */
+.custom-checkbox input[type="checkbox"] {
+  display: none;
+}
+
+.custom-checkbox {
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 20px;
+  padding-left: 30px; 
+  user-select: none; 
+}
+
+/* Custom Checkbox Visual Style */
+.custom-checkbox .checkmark {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  background-color: #f0f0f0;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+
+/* Checked State Styling */
+.custom-checkbox input[type="checkbox"]:checked + .checkmark {
+  background-color: var(--primary-cta); 
+  border-color: var(--primary-cta); 
+}
+
+/* Checkmark Symbol */
+.custom-checkbox input[type="checkbox"]:checked + .checkmark::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 8px;
+  height: 12px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  transform: rotate(45deg);
+}
+
+/* Recipe Grid Container */
+.recipe {
+  display: flex;
+  justify-content: center;
+}
+
+/* Error Message Styling */
+.error {
+  font-size: 2rem;
+  margin: auto 0;
+}
+
+/* Recipe Cards Grid Layout */
+.recipes-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  justify-content: center;
+  align-items: center;
+  gap: 50px;
+}

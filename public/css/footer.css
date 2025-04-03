@@ -1,0 +1,68 @@
+/**
+ * Footer Styles
+ * 
+ * This file contains the CSS styles for the website footer, including:
+ * - Footer layout and spacing
+ * - Contact information
+ * - Social media icons (commented out)
+ * - Legal links
+ * 
+ * @package GreenGarnishLabs
+ * @version 1.0.0
+ */
+
+/* Import CSS variables */
+@import url('variables.css');
+
+/* Main Footer Container */
+footer {
+  margin: 15px 30px;
+}
+
+/* Upper Footer Section */
+.upper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Left Footer Section */
+.left-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+}
+
+/* Social Media Icons (Currently Disabled)
+.icons {
+  margin-top: 10px;
+}
+
+.fa-brands {
+  transition: all ease 0.3s;
+  color: var(--primary-text-color);
+}
+
+.fa-instagram {
+  margin-right: 10px;
+}
+
+.fa-instagram:hover {
+  color: #EE2E7B;
+}
+*/
+
+/* Legal Information Links */
+.impressum {
+  margin-top: 15px;
+}
+
+.impressum a {
+  font-size: 14px;
+  text-decoration: none;
+  color: var(--primary-text-color);
+}
+
+.impressum a:hover {
+  text-decoration: underline;
+}

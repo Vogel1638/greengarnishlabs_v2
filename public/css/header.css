@@ -1,0 +1,110 @@
+/**
+ * Header Styles
+ * 
+ * This file contains the CSS styles for the website header, including:
+ * - Header layout and positioning
+ * - Navigation menu styling
+ * - Logo styling
+ * - Authentication buttons
+ * - Profile menu styling
+ * 
+ * @package GreenGarnishLabs
+ * @version 1.0.0
+ */
+
+/* Import CSS variables */
+@import url('variables.css');
+
+/* Main Header Container */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+}
+
+/* Desktop Header Layout */
+.desktop-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+/* Logo Styling */
+.logo {
+  font-family: 'Mr De Haviland', cursive;
+  font-size: 2.3rem;
+  font-weight: 400;
+  font-style: normal;
+  color: var(--primary-text-color);
+  text-decoration: none;
+}
+
+/* Navigation Menu */
+.desktop-navbar menu {
+  display: flex;
+  justify-content: space-around;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  gap: 5rem;
+}
+
+/* Navigation Items */
+.nav-item {
+  margin: 0 15px;
+}
+
+/* Navigation Links */
+.nav-link {
+  text-decoration: none;
+  color: var(--primary-text-color);
+  transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+  border-bottom: 2px solid var(--primary-text-color);
+}
+
+/* Login Container */
+.login {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: center;
+}
+
+/* Call-to-Action Buttons */
+.cta-btn {
+  padding: 10px 30px;
+  border: none;
+  border-radius: 12.5px;
+  background: var(--primary-cta);
+  transition: all 0.3s ease;
+  color: var(--primary-background);
+  text-decoration: none;
+}
+
+.cta-btn:hover {
+  background: none;
+  border: 2px solid var(--primary-cta);
+  color: var(--primary-cta);
+}
+
+/* Profile Menu Items */
+.profile-menu-item {
+  list-style: none;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.profile-menu-item a {
+  text-decoration: none;
+  color: #010300;
+  transition: all 0.3s ease;
+}
+
+.profile-menu-item a:hover {
+  text-decoration: underline;
+}

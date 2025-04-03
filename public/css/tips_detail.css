@@ -1,0 +1,22 @@
+.tip-detail-container {
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+  margin: 0 30px;
+}
+
+.tip-detail {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+}  
+
+.tip-img {
+  height: 40vh;
+  width: 80vw;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}

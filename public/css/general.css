@@ -1,0 +1,125 @@
+/**
+ * General CSS Styles
+ * 
+ * This file contains the core CSS styles for the website, including:
+ * - CSS reset
+ * - Typography definitions
+ * - Common UI components
+ * - Profile menu styling
+ * 
+ * @package GreenGarnishLabs
+ * @version 1.0.0
+ */
+
+/* Import CSS variables */
+@import url('variables.css');
+
+/* CSS Reset */
+*::before, *::after, * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Typography Section */
+@font-face {
+  font-family: 'Montserrat';
+  src: url('../fonts/Montserrat/Montserrat-VariableFont_wght.ttf');
+}
+
+@font-face {
+  font-family: 'Mr De Haviland';
+  src: url('../fonts/Mr_De_Haviland/MrDeHaviland-Regular.ttf');
+}
+
+/* General Styles */
+body {
+  font-family: 'Montserrat', sans-serif;
+  font-optical-sizing: auto;
+  background: var(--primary-background);
+  color: var(--primary-text-color);
+  max-width: 2000px;
+  margin: 0 auto;
+}
+
+/* Visual separator between sections */
+.divider {
+  margin: 100px 30px;
+  height: 2px;
+  background: var(--primary-text-color);
+}
+
+/* Button Styles */
+.btn {
+  background: none;
+  border: 2px solid var(--primary-text-color);
+  border-radius: 12.5px;
+  height: 40px;
+  width: 185px;
+  color: var(--primary-text-color);
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.btn a {
+  color: var(--primary-text-color);
+  text-decoration: none;
+}
+
+.btn:hover {
+  background: var(--primary-text-color);
+  color: var(--primary-background);
+}
+
+/* Button cursor style */
+button {
+  cursor: pointer;
+}
+
+/* Profile Image Container */
+.profile-img {
+  width: 75px;
+  height: 75px;
+  border-radius: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px #fff solid;
+  transition: all 0.3s ease;
+  background: transparent;
+}
+
+.profile-img img {
+  filter: invert();
+  height: 40px;
+}
+
+/* Profile Image Hover Effect */
+.profile-img:hover {
+  background: #fff;
+}
+
+.profile-img:hover img {
+  filter: invert(0);
+}
+
+/* Profile Container */
+.profile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  gap: 10px;
+}
+
+/* Profile Dropdown Menu */
+.profile-menu {
+  position: absolute;
+  top: 75px;
+  right: 0;
+  background: #fff;
+  padding: 15px;
+  border-radius: 5px;
+  min-width: 175px;
+}
+
