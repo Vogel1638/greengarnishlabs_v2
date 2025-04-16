@@ -1,14 +1,3 @@
-<!--/**
- * Database Connection Handler
- * 
- * This file establishes the database connection using PDO with:
- * - UTF-8 character encoding
- * - Error mode set to exception
- * - Secure connection parameters
- * 
- * @package GreenGarnishLabs
- * @version 1.0.0
- */-->
 
 <?php
 // Database connection parameters

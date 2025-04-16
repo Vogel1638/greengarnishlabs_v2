@@ -1,14 +1,7 @@
-<!--/**
- * Tips and Tricks Overview Page
- * 
- * This file displays a list of all cooking tips and tricks with:
- * - Search functionality
- * - Pagination support
- * - Responsive card layout
- * 
- * @package GreenGarnishLabs
- * @version 1.0.0
- */-->
+/**
+ * Tips and Tricks Overview
+ * Displays a list of all tips and tricks with search and filter functionality
+ */
 
 <?php
   session_start();
@@ -61,7 +54,7 @@ include('../templates/header.php');
           <?php foreach ($tips as $tip): ?>
             <article class="tip-card">
               <!-- Display tip image with fallback -->
-              <img src="<?php echo BASE_URL; ?>public/images/<?php echo $tip['image']; ?>.png" alt="<?php echo $tip['title']; ?>">
+              <img src="<?php echo BASE_URL; ?>public/images/tips/<?php echo $tip['image']; ?>.png" alt="<?php echo $tip['title']; ?>">
               
               <!-- Tip title -->
               <h3><?php echo $tip['title']; ?> </h3>

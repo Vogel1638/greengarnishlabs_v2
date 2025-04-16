@@ -1,15 +1,3 @@
-<!--
- * Main Header Template
- * 
- * This file contains the main header template used across all pages, including:
- * - Navigation menu
- * - User authentication status
- * - Profile menu
- * - CSS and JavaScript includes
- * 
- * @package GreenGarnishLabs
- * @version 1.0.0
- */-->
 
 <?php
 // Define base URL for all assets and links

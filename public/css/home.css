@@ -97,6 +97,7 @@
 }
 
 .tags {
+  margin-top: 15px;
   display: flex;
   gap: 10px;
 }
@@ -109,6 +110,8 @@
   transition: all 0.3s ease;
   margin-bottom: 10px;
   max-width: 50%;
+  text-decoration: none;
+  color: var(--primary-text-color);
 }
 
 .tag:hover {

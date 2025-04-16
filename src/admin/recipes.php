@@ -1,6 +1,7 @@
 <?php
 /**
- * Admin Recipes Management
+ * Admin Recipe Management
+ * Handles recipe listing, searching, and management
  * 
  * This file handles the administration of recipes in the GreenGarnishLabs platform.
  * It provides functionality for viewing, searching, sorting, and managing recipes.

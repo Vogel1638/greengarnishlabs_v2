@@ -1,6 +1,6 @@
 <?php
   /**
-   * Recipe Detail View
+   * Recipe View Page
    * Displays detailed information about a specific recipe
    */
 
@@ -19,7 +19,14 @@
   $recipe_id = $_GET['id'];
 
   // Fetch recipe data from database
-  $stmt = $pdo->prepare("SELECT * FROM recipes WHERE id = ?");
+  $stmt = $pdo->prepare("SELECT r.*, 
+    GROUP_CONCAT(ri.amount, '|', ri.unit, '|', ri.name) as ingredients_data,
+    GROUP_CONCAT(rs.step_number, '|', rs.title, '|', rs.content) as steps_data
+    FROM recipes r
+    LEFT JOIN recipe_ingredients ri ON r.id = ri.recipe_id
+    LEFT JOIN recipe_steps rs ON r.id = rs.recipe_id
+    WHERE r.id = ?
+    GROUP BY r.id");
   $stmt->execute([$recipe_id]);
   $recipe = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -29,7 +36,7 @@
       exit;
   }
 
-  // Erhöhe die View-Zählung
+  // Increase view count
   $stmt = $pdo->prepare("UPDATE recipes SET views = views + 1 WHERE id = ?");
   $stmt->execute([$recipe_id]);
 
@@ -39,8 +46,35 @@
   $subtitle = $recipe['subtitle'];
   $prep_time = $recipe['prep_time'];
   $difficulty = $recipe['difficulty'];
-  $ingredients = json_decode($recipe['ingredients'], true) ?? []; 
-  $steps = json_decode($recipe['steps'], true) ?? []; 
+
+  // Extrahiere Zutaten und Schritte
+  $ingredients = [];
+  if (!empty($recipe['ingredients_data'])) {
+      foreach (explode(',', $recipe['ingredients_data']) as $ingredient) {
+          $parts = explode('|', $ingredient);
+          if (count($parts) === 3) {
+              $ingredients[] = [
+                  'amount' => $parts[0],
+                  'unit' => $parts[1],
+                  'name' => $parts[2]
+              ];
+          }
+      }
+  }
+
+  $steps = [];
+  if (!empty($recipe['steps_data'])) {
+      foreach (explode(',', $recipe['steps_data']) as $step) {
+          $parts = explode('|', $step);
+          if (count($parts) === 3) {
+              $steps[] = [
+                  'title' => $parts[1],
+                  'content' => $parts[2]
+              ];
+          }
+      }
+  }
+
   $serving_tip = $recipe['serving_tip'] ?? null; 
 
   // Check if recipe is favorited by current user
@@ -63,13 +97,13 @@
         <div class="recipe-header">
             <!-- Recipe image with dynamic path -->
             <div class="recipe-image">
-                <img src="<?php echo BASE_URL . 'public/images/' . $image . '.png'; ?>" alt="<?php echo $title; ?>">
+                <img src="<?php echo BASE_URL . 'public/images/' . $image; ?>" alt="<?php echo $title; ?>">
             </div>
 
             <!-- Information section with title, subtitle and metadata -->
             <div class="recipe-info">
-                <h1><?php echo $title; ?></h1>
-                <p class="subtitle"><?php echo $subtitle; ?></p>
+                <h1><?php echo htmlspecialchars($recipe['title']); ?></h1>
+                <p class="subtitle"><?php echo htmlspecialchars($recipe['subtitle']); ?></p>
 
                 <!-- Recipe metadata (prep time, difficulty) -->
                 <div class="recipe-details">

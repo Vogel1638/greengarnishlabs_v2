@@ -1,17 +1,17 @@
 <?php
-// Admin-Login-Überprüfung
+// Admin login check
 session_start();
 
-// Überprüfen, ob der Benutzer eingeloggt ist und ob er ein Admin ist
+// Check if user is logged in and is an admin
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
     header('Location: ../auth/login.php');
     exit;
 }
 
-// Datenbankverbindung
+// Database connection
 require_once '../includes/db.php';
 
-// Statistiken abrufen
+// Retrieve statistics
 $stats = [
     'recipes' => [
         'published' => 0,
@@ -24,21 +24,21 @@ $stats = [
     'users' => 0
 ];
 
-// Rezepte zählen
+// Count recipes
 $stmt = $pdo->query("SELECT COUNT(*) as total FROM recipes WHERE status = 1");
 $stats['recipes']['published'] = $stmt->fetch()['total'];
 
 $stmt = $pdo->query("SELECT COUNT(*) as total FROM recipes WHERE status = 0");
 $stats['recipes']['drafts'] = $stmt->fetch()['total'];
 
-// Tipps zählen
+// Count tips
 $stmt = $pdo->query("SELECT COUNT(*) as total FROM tips WHERE status = 1");
 $stats['tips']['published'] = $stmt->fetch()['total'];
 
 $stmt = $pdo->query("SELECT COUNT(*) as total FROM tips WHERE status = 0");
 $stats['tips']['drafts'] = $stmt->fetch()['total'];
 
-// Benutzer zählen
+// Count users
 $stmt = $pdo->query("SELECT COUNT(*) as total FROM users");
 $stats['users'] = $stmt->fetch()['total'];
 ?>

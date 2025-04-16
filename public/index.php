@@ -60,7 +60,7 @@ include('../src/templates/header.php');
       <?php foreach ($recipes as $recipe): ?>
         <article class="recipe-card">
           <!-- Display Image -->
-          <img src="images/<?php echo $recipe['image']; ?>.png" alt="<?php echo $recipe['title']; ?>">
+          <img src="images/recipes/<?php echo $recipe['image']; ?>" alt="<?php echo $recipe['title']; ?>">
           
           <!-- Title and vegan Symbol -->
           <h3><?php echo $recipe['title']; ?> 
@@ -77,8 +77,8 @@ include('../src/templates/header.php');
           
           <!-- Tags -->
           <div class="tags">
-            <p class="tag" ><?php echo $recipe['category']; ?></p>
-            <p class="tag"><?php echo $recipe['difficulty']; ?></p>
+            <a href="<?php echo BASE_URL; ?>src/recipes/index.php?category=<?php echo urlencode($recipe['category']); ?>" class="tag"><?php echo $recipe['category']; ?></a>
+            <a href="<?php echo BASE_URL; ?>src/recipes/index.php?difficulty=<?php echo urlencode($recipe['difficulty']); ?>" class="tag"><?php echo $recipe['difficulty']; ?></a>
           </div>
           
           <!-- Button for the detail page -->
@@ -126,7 +126,7 @@ include('../src/templates/header.php');
   <div class="tip-cards">
     <?php foreach ($tips as $tip): ?>
       <article class="tip-card">
-        <img src="<?php echo BASE_URL; ?>public/images/<?php echo $tip['image']; ?>.png" alt="<?php echo $tip['title']; ?>">
+        <img src="<?php echo BASE_URL; ?>public/images/tips/<?php echo $tip['image']; ?>" alt="<?php echo $tip['title']; ?>">
         <h3><?php echo $tip['title']; ?></h3>
         <p><?php echo substr($tip['content'], 0, 150); ?>...</p>
         <button class="btn" onclick="window.location.href='<?php echo BASE_URL; ?>src/tips/view.php?id=<?php echo $tip['id']; ?>'">Weiterlesen</button>

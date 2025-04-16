@@ -2,6 +2,7 @@
  * Recipe Detail Page Styles
  * Contains all styles for the recipe detail view
  */
+@import url('variables.css');
 
 /* Main container for recipe content */
 .recipe-detail-container {
@@ -49,16 +50,20 @@
 
 /* Favorite button styling */
 .favorite-btn {
-  background-color: #28a745;
-  color: white;
-  padding: 10px 20px;
+  background-color: var(--primary-cta);
+  color: var(--primary-background);
   border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
   cursor: pointer;
+  transition: background-color 0.3s;
 }
 
 /* Favorite button hover state */
 .favorite-btn:hover {
-  background-color: #218838;
+  background: none;
+  border: 1px solid var(--primary-cta);
+  color: var(--primary-cta);
 }
 
 /* Section spacing for recipe content */
@@ -82,21 +87,15 @@ h2 {
   text-decoration: underline;
 }
 
-.favorite-btn {
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
 .favorite-btn.favorited {
   background-color: #dc3545;
   color: white;
 }
 
-.favorite-btn:hover {
-  opacity: 0.9;
+.favorite-btn.favorited:hover {
+  background-color: #a32431;
+  border: none;
 }
+
+
+

@@ -1,6 +1,7 @@
 <?php
 /**
- * Admin Users Management
+ * Admin User Management
+ * Handles user listing, searching, and role management
  * 
  * This file handles the administration of users in the GreenGarnishLabs platform.
  * It provides functionality for viewing, searching, sorting, and managing user accounts.
@@ -58,11 +59,11 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $users = $stmt->fetchAll();
 
-// Status-Änderung verarbeiten
+// Process status change
 if (isset($_POST['toggle_status']) && isset($_POST['user_id'])) {
     $userId = $_POST['user_id'];
     
-    // Prüfen ob es sich um ein Admin-Konto handelt
+    // Check if it's an admin account
     $stmt = $pdo->prepare("SELECT role FROM users WHERE id = ?");
     $stmt->execute([$userId]);
     $userRole = $stmt->fetch()['role'];
@@ -75,12 +76,12 @@ if (isset($_POST['toggle_status']) && isset($_POST['user_id'])) {
     exit;
 }
 
-// Rolle ändern
+// Change role
 if (isset($_POST['change_role']) && isset($_POST['user_id']) && isset($_POST['new_role']) && isset($_POST['confirm_role_change'])) {
     $userId = $_POST['user_id'];
     $newRole = $_POST['new_role'];
     
-    // Prüfen ob es sich um das eigene Konto handelt
+    // Check if it's the own account
     if ($userId != $_SESSION['user_id']) {
         $stmt = $pdo->prepare("UPDATE users SET role = ? WHERE id = ?");
         $stmt->execute([$newRole, $userId]);
@@ -211,7 +212,7 @@ if (isset($_POST['change_role']) && isset($_POST['user_id']) && isset($_POST['ne
                                 </div>
                                 <div class="col-md-2">
                                     <span class="status-badge <?php echo $user['status'] == 1 ? 'status-active' : 'status-inactive'; ?>">
-                                        <?php echo $user['status'] == 1 ? 'Aktiv' : 'Inaktiv'; ?>
+                                        <?php echo $user['status'] == 1 ? 'Active' : 'Inactive'; ?>
                                     </span>
                                 </div>
                                 <div class="col-md-2">
@@ -221,13 +222,13 @@ if (isset($_POST['change_role']) && isset($_POST['user_id']) && isset($_POST['ne
                                 </div>
                                 <div class="col-md-3">
                                     <small class="text-muted">
-                                        <i class="bi bi-calendar me-1"></i> Registriert am: <?php echo date('d.m.Y', strtotime($user['created_at'])); ?>
+                                        <i class="bi bi-calendar me-1"></i> Registered on: <?php echo date('d.m.Y', strtotime($user['created_at'])); ?>
                                     </small>
                                 </div>
                                 <div class="col-md-2 text-end">
                                     <div class="dropdown">
                                         <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                            Aktionen
+                                            Actions
                                         </button>
                                         <ul class="dropdown-menu dropdown-menu-end">
                                             <?php if ($user['role'] !== 'admin'): ?>
@@ -237,7 +238,7 @@ if (isset($_POST['change_role']) && isset($_POST['user_id']) && isset($_POST['ne
                                                     <input type="hidden" name="toggle_status" value="1">
                                                     <button type="submit" class="dropdown-item">
                                                         <i class="bi bi-power me-2"></i>
-                                                        <?php echo $user['status'] == 1 ? 'Deaktivieren' : 'Aktivieren'; ?>
+                                                        <?php echo $user['status'] == 1 ? 'Deactivate' : 'Activate'; ?>
                                                     </button>
                                                 </form>
                                             </li>
@@ -247,20 +248,20 @@ if (isset($_POST['change_role']) && isset($_POST['user_id']) && isset($_POST['ne
                                             <li>
                                                 <a class="dropdown-item" href="#" onclick="confirmRoleChange(<?php echo $user['id']; ?>, '<?php echo $user['role']; ?>')">
                                                     <i class="bi bi-person-badge me-2"></i>
-                                                    Rolle zu <?php echo $user['role'] == 'admin' ? 'Benutzer' : 'Admin'; ?> ändern
+                                                    Change role to <?php echo $user['role'] == 'admin' ? 'User' : 'Admin'; ?>
                                                 </a>
                                             </li>
                                             <?php endif; ?>
                                           
                                             <li><a class="dropdown-item" href="user-edit.php?id=<?php echo $user['id']; ?>">
-                                                <i class="bi bi-pencil me-2"></i>Bearbeiten
+                                                <i class="bi bi-pencil me-2"></i>Edit
                                             </a></li>
                                             
                                             <?php if ($user['role'] !== 'admin'): ?>
                                             <li><hr class="dropdown-divider"></li>
                                             <li>
                                                 <a class="dropdown-item text-danger" href="#" onclick="confirmDelete(<?php echo $user['id']; ?>)">
-                                                    <i class="bi bi-trash me-2"></i>Löschen
+                                                    <i class="bi bi-trash me-2"></i>Delete
                                                 </a>
                                             </li>
                                             <?php endif; ?>

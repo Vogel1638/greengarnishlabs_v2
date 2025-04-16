@@ -1,3 +1,8 @@
+<!--/**
+ * User Update Handler
+ * Handles the update of user profile information
+ */-->
+
 <?php
 session_start();
 require '../includes/db.php';
@@ -20,7 +25,7 @@ if (!$data || !isset($data['field']) || !isset($data['value'])) {
 $field = $data['field'];
 $value = trim($data['value']);
 
-// Sicherheitsmaßnahmen
+// Security measures
 $allowedFields = ['username', 'email', 'password'];
 if (!in_array($field, $allowedFields)) {
     http_response_code(400);

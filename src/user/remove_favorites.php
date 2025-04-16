@@ -2,6 +2,11 @@
 session_start();
 require '../includes/db.php';
 
+/**
+ * Remove Favorites Handler
+ * Handles the removal of recipes from user favorites
+ */
+
 if (!isset($_SESSION['user_id'])) {
     http_response_code(403);
     echo json_encode(["error" => "Nicht autorisiert"]);

@@ -12,6 +12,10 @@ if ($_SESSION['role'] != 'user') {
     exit;
 }
 
+/**
+ * User Profile Page
+ * Displays and manages user profile information
+ */
 // Get user data
 try {
     // Debug output before query

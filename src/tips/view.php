@@ -2,26 +2,26 @@
 session_start();
 require '../includes/db.php';
 
-// Überprüfen, ob die ID über die URL übergeben wurde
+// Check if ID was passed via URL
 if (!isset($_GET['id'])) {
-    echo "Tipp oder Trick nicht gefunden!";
+    echo "Tipp or trick not found!";
     exit;
 }
 
 $tip_id = $_GET['id'];
 
-// Rezeptdaten abrufen
+// Retrieve recipe data
 $stmt = $pdo->prepare("SELECT * FROM tips WHERE id = ?");
 $stmt->execute([$tip_id]);
 $tip = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// Wenn kein Rezept gefunden wurde
+// If no recipe was found
 if (!$tip) {
-    echo "Tipp oder Trick nicht gefunden!";
+    echo "Tipp or trick not found!";
     exit;
 }
 
-// Erhöhe die View-Zählung
+// Increase view count
 $stmt = $pdo->prepare("UPDATE tips SET views = views + 1 WHERE id = ?");
 $stmt->execute([$tip_id]);
 ?>
@@ -32,7 +32,7 @@ $stmt->execute([$tip_id]);
     <a href="javascript:history.back()" class="back-btn"><-- Back</a>
     <div class="tip-detail">
         <!-- Rezeptbild und Titel -->
-         <div class="tip-img" style="background: url('<?php echo BASE_URL; ?>public/images/<?php echo $tip['image']; ?>.png'); background-position: center; background-repeat: no-repeat; background-size: contain;"></div>
+         <div class="tip-img" style="background: url('<?php echo BASE_URL; ?>public/images/tips/<?php echo $tip['image']; ?>.png'); background-position: center; background-repeat: no-repeat; background-size: contain;"></div>
         <h1><?php echo $tip['title']; ?></h1>
 
         <!-- Rezeptdetails -->

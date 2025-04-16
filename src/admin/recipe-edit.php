@@ -18,12 +18,9 @@ $recipe = [
     'prep_time' => '',
     'difficulty' => 'easy',
     'category' => '',
-    'ingredients' => '',
-    'steps' => '',
-    'serving_tip' => '',
     'image' => '',
-    'is_vegan' => 0,
-    'status' => 0
+    'is_vegan' => false,
+    'status' => false
 ];
 
 // Wenn eine ID übergeben wurde, lade das bestehende Rezept
@@ -31,11 +28,12 @@ if (isset($_GET['id'])) {
     $stmt = $pdo->prepare("SELECT * FROM recipes WHERE id = ?");
     $stmt->execute([$_GET['id']]);
     $existing_recipe = $stmt->fetch(PDO::FETCH_ASSOC);
+    
     if ($existing_recipe) {
         $recipe = $existing_recipe;
-        // Zutaten und Schritte aus JSON laden
-        $ingredients = json_decode($recipe['ingredients'], true) ?? [];
-        $steps = json_decode($recipe['steps'], true) ?? [];
+        // JSON-Daten in Arrays umwandeln
+        $ingredients = json_decode($recipe['ingredients'], true) ?: [];
+        $steps = json_decode($recipe['steps'], true) ?: [];
     }
 } else {
     $ingredients = [];
@@ -53,67 +51,76 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $is_vegan = isset($_POST['is_vegan']) ? 1 : 0;
     $status = isset($_POST['status']) ? 1 : 0;
 
-    // Zutaten verarbeiten
-    $ingredients = [];
-    if (isset($_POST['ingredient_amount']) && isset($_POST['ingredient_unit']) && isset($_POST['ingredient_name'])) {
-        for ($i = 0; $i < count($_POST['ingredient_amount']); $i++) {
-            if (!empty($_POST['ingredient_amount'][$i]) && !empty($_POST['ingredient_name'][$i])) {
-                $ingredients[] = [
-                    'amount' => trim($_POST['ingredient_amount'][$i]),
-                    'unit' => trim($_POST['ingredient_unit'][$i]),
-                    'name' => trim($_POST['ingredient_name'][$i])
-                ];
-            }
-        }
-    }
-    $ingredients_json = json_encode($ingredients);
-
-    // Zubereitungsschritte verarbeiten
-    $steps = [];
-    if (isset($_POST['step_title']) && isset($_POST['step_content'])) {
-        for ($i = 0; $i < count($_POST['step_title']); $i++) {
-            if (!empty($_POST['step_title'][$i]) && !empty($_POST['step_content'][$i])) {
-                $steps[] = [
-                    'title' => trim($_POST['step_title'][$i]),
-                    'content' => trim($_POST['step_content'][$i])
-                ];
-            }
-        }
-    }
-    $steps_json = json_encode($steps);
-
-    // Bild-Upload verarbeiten
-    $image = $recipe['image']; // Behalte das bestehende Bild bei
-    if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-        $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
-        $file_type = $_FILES['image']['type'];
-        $max_size = 5 * 1024 * 1024; // 5MB in Bytes
-        
-        if ($_FILES['image']['size'] > $max_size) {
-            $error = "Das Bild darf nicht größer als 5MB sein.";
-        } else if (in_array($file_type, $allowed_types)) {
-            $upload_dir = '../../public/images/recipes/';
-            if (!file_exists($upload_dir)) {
-                mkdir($upload_dir, 0777, true);
-            }
-            
-            $file_extension = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
-            $new_filename = uniqid() . '.' . $file_extension;
-            $upload_path = $upload_dir . $new_filename;
-            
-            if (move_uploaded_file($_FILES['image']['tmp_name'], $upload_path)) {
-                // Lösche das alte Bild, falls vorhanden
-                if ($recipe['image'] && file_exists($upload_dir . $recipe['image'])) {
-                    unlink($upload_dir . $recipe['image']);
-                }
-                $image = $new_filename; // Speichere nur den Dateinamen
-            }
-        } else {
-            $error = "Nur Bilder im Format JPG, PNG oder GIF sind erlaubt.";
-        }
-    }
-
     try {
+        // Bild-Upload verarbeiten
+        $image = $recipe['image']; // Behalte das bestehende Bild bei
+        if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+            $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
+            $file_type = $_FILES['image']['type'];
+            $max_size = 5 * 1024 * 1024; // 5MB in Bytes
+            
+            if ($_FILES['image']['size'] > $max_size) {
+                $error = "Das Bild darf nicht größer als 5MB sein.";
+            } else if (in_array($file_type, $allowed_types)) {
+                $upload_dir = '../../public/images/recipes/';
+                if (!file_exists($upload_dir)) {
+                    mkdir($upload_dir, 0777, true);
+                }
+                
+                $file_extension = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
+                $new_filename = uniqid() . '.' . $file_extension;
+                $upload_path = $upload_dir . $new_filename;
+                
+                if (move_uploaded_file($_FILES['image']['tmp_name'], $upload_path)) {
+                    // Lösche das alte Bild, falls vorhanden
+                    if ($recipe['image'] && file_exists($upload_dir . $recipe['image'])) {
+                        unlink($upload_dir . $recipe['image']);
+                    }
+                    $image = $new_filename; // Speichere nur den Dateinamen
+                }
+            } else {
+                $error = "Nur Bilder im Format JPG, PNG oder GIF sind erlaubt.";
+            }
+        } else if (empty($image)) {
+            // Wenn kein Bild hochgeladen wurde und kein bestehendes Bild existiert, verwende das Standardbild
+            $image = 'default.png';
+            // Kopiere das Standardbild in das Upload-Verzeichnis, falls es noch nicht existiert
+            $default_image_path = '../../public/images/default.png';
+            $upload_dir = '../../public/images/recipes/';
+            if (!file_exists($upload_dir . $image) && file_exists($default_image_path)) {
+                copy($default_image_path, $upload_dir . $image);
+            }
+        }
+
+        // Zutaten und Schritte als JSON vorbereiten
+        $ingredients_json = [];
+        if (isset($_POST['ingredient_amount']) && isset($_POST['ingredient_unit']) && isset($_POST['ingredient_name'])) {
+            for ($i = 0; $i < count($_POST['ingredient_amount']); $i++) {
+                if (!empty($_POST['ingredient_amount'][$i]) && !empty($_POST['ingredient_name'][$i])) {
+                    $ingredients_json[] = [
+                        'amount' => trim($_POST['ingredient_amount'][$i]),
+                        'unit' => trim($_POST['ingredient_unit'][$i]),
+                        'name' => trim($_POST['ingredient_name'][$i])
+                    ];
+                }
+            }
+        }
+
+        $steps_json = [];
+        if (isset($_POST['step_title']) && isset($_POST['step_content'])) {
+            for ($i = 0; $i < count($_POST['step_title']); $i++) {
+                if (!empty($_POST['step_content'][$i])) {
+                    $steps_json[] = [
+                        'step_number' => $i + 1,
+                        'title' => trim($_POST['step_title'][$i]),
+                        'content' => trim($_POST['step_content'][$i])
+                    ];
+                }
+            }
+        }
+
+        $pdo->beginTransaction();
+
         if ($recipe['id']) {
             // Update bestehendes Rezept
             $stmt = $pdo->prepare("UPDATE recipes SET 
@@ -122,11 +129,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 prep_time = ?, 
                 difficulty = ?, 
                 category = ?,
-                ingredients = ?, 
-                steps = ?,
                 image = ?,
                 is_vegan = ?,
-                status = ?
+                status = ?,
+                ingredients = ?,
+                steps = ?,
+                updated_at = CURRENT_TIMESTAMP
                 WHERE id = ?");
             
             $stmt->execute([
@@ -135,18 +143,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $prep_time,
                 $difficulty,
                 $category,
-                $ingredients_json,
-                $steps_json,
                 $image,
                 $is_vegan,
                 $status,
+                json_encode($ingredients_json),
+                json_encode($steps_json),
                 $recipe['id']
             ]);
         } else {
             // Neues Rezept erstellen
             $stmt = $pdo->prepare("INSERT INTO recipes 
-                (title, subtitle, prep_time, difficulty, category, ingredients, steps, image, is_vegan, status, created_at) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())");
+                (title, subtitle, prep_time, difficulty, category, image, is_vegan, status, ingredients, steps) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             
             $stmt->execute([
                 $title,
@@ -154,18 +162,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $prep_time,
                 $difficulty,
                 $category,
-                $ingredients_json,
-                $steps_json,
                 $image,
                 $is_vegan,
-                $status
+                $status,
+                json_encode($ingredients_json),
+                json_encode($steps_json)
             ]);
+            
+            $recipe['id'] = $pdo->lastInsertId();
         }
 
-        // Weiterleitung zur Rezeptliste
+        $pdo->commit();
         header('Location: recipes.php');
         exit;
     } catch (PDOException $e) {
+        $pdo->rollBack();
         $error = "Fehler beim Speichern des Rezepts: " . $e->getMessage();
     }
 }
@@ -248,9 +259,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <div class="mb-3">
                                         <label for="difficulty" class="form-label">Schwierigkeitsgrad</label>
                                         <select class="form-select" id="difficulty" name="difficulty" required>
-                                            <option value="easy" <?php echo $recipe['difficulty'] === 'easy' ? 'selected' : ''; ?>>Einfach</option>
-                                            <option value="medium" <?php echo $recipe['difficulty'] === 'medium' ? 'selected' : ''; ?>>Mittel</option>
-                                            <option value="hard" <?php echo $recipe['difficulty'] === 'hard' ? 'selected' : ''; ?>>Schwer</option>
+                                            <option value="Einfach" <?php echo $recipe['difficulty'] === 'Einfach' ? 'selected' : ''; ?>>Einfach</option>
+                                            <option value="Mittel" <?php echo $recipe['difficulty'] === 'Mittel' ? 'selected' : ''; ?>>Mittel</option>
+                                            <option value="Schwer" <?php echo $recipe['difficulty'] === 'Schwer' ? 'selected' : ''; ?>>Schwer</option>
                                         </select>
                                     </div>
                                 </div>
@@ -302,6 +313,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                         <option value="Dose" <?php echo $ingredient['unit'] === 'Dose' ? 'selected' : ''; ?>>Dose</option>
                                                         <option value="Glas" <?php echo $ingredient['unit'] === 'Glas' ? 'selected' : ''; ?>>Glas</option>
                                                         <option value="Packung" <?php echo $ingredient['unit'] === 'Packung' ? 'selected' : ''; ?>>Packung</option>
+                                                        <option value=" " <?php echo $ingredient['unit'] === ' ' ? 'selected' : ''; ?>> </option>
                                                     </select>
                                                 </td>
                                                 <td>
@@ -343,7 +355,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                     <input type="text" class="form-control" 
                                                            name="step_title[]" 
                                                            value="<?php echo htmlspecialchars($step['title']); ?>" 
-                                                           required>
+                                                           >
                                                 </td>
                                                 <td>
                                                     <textarea class="form-control" 
@@ -372,7 +384,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <label for="image" class="form-label">Bild</label>
                                 <?php if ($recipe['image']): ?>
                                     <div class="mb-2">
-                                        <img src="/greengarnishlabs/public/images/<?php echo htmlspecialchars($recipe['image']); ?>.png" 
+                                        <img src="/greengarnishlabs/public/images/<?php echo htmlspecialchars($recipe['image']); ?>" 
                                              alt="Aktuelles Rezeptbild" class="img-thumbnail" style="max-width: 200px;">
                                     </div>
                                 <?php endif; ?>
@@ -485,7 +497,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 const newRow = document.createElement('tr');
                 newRow.innerHTML = `
                     <td>
-                        <input type="text" class="form-control" name="step_title[]" required>
+                        <input type="text" class="form-control" name="step_title[]">
                     </td>
                     <td>
                         <textarea class="form-control" name="step_content[]" rows="3" required></textarea>

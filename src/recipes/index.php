@@ -2,28 +2,35 @@
   session_start();
   require '../includes/db.php';
   
-  $query = "SELECT * FROM recipes WHERE status = 1"; 
+  $query = "SELECT r.*, 
+    COUNT(DISTINCT f.user_id) as favorite_count
+    FROM recipes r
+    LEFT JOIN favorites f ON r.id = f.recipe_id
+    WHERE r.status = TRUE";
+  
   $params = [];
   
   if (!empty($_GET['category'])) {
-      $query .= " AND category LIKE ?";
+      $query .= " AND r.category LIKE ?";
       $params[] = '%' . $_GET['category'] . '%';
   }
   
   if (!empty($_GET['difficulty'])) {
-      $query .= " AND difficulty LIKE ?";
-      $params[] = '%' . $_GET['difficulty'] . '%';
+      $query .= " AND r.difficulty = ?";
+      $params[] = $_GET['difficulty'];
   }
   
   if (!empty($_GET['time'])) {
-      $query .= " AND total_time <= ?";
+      $query .= " AND r.total_time <= ?";
       $params[] = (int)$_GET['time'];
   }
   
   if (isset($_GET['is_vegan']) && $_GET['is_vegan'] !== '') {
-    $query .= " AND is_vegan = ?";
-    $params[] = (int)$_GET['is_vegan'];
+    $query .= " AND r.is_vegan = ?";
+    $params[] = (bool)$_GET['is_vegan'];
 }
+  
+  $query .= " GROUP BY r.id ORDER BY r.created_at DESC";
   
   $stmt = $pdo->prepare($query);
   $stmt->execute($params);
@@ -85,7 +92,7 @@ include('../templates/header.php');
         <?php foreach ($recipes as $recipe): ?>
           <article class="recipe-card">
             <!-- Display Image -->
-            <img src="<?php echo BASE_URL; ?>public/images/<?php echo $recipe['image']; ?>.png" alt="<?php echo $recipe['title']; ?>">
+            <img src="<?php echo BASE_URL; ?>public/images/recipes/<?php echo $recipe['image']; ?>" alt="<?php echo $recipe['title']; ?>">
             
             <!-- Title and vegan Symbol -->
             <h3><?php echo $recipe['title']; ?> 
@@ -102,8 +109,8 @@ include('../templates/header.php');
             
             <!-- Tags -->
             <div class="tags">
-              <p class="tag"><?php echo $recipe['category']; ?></p>
-              <p class="tag"><?php echo $recipe['difficulty']; ?></p>
+              <a href="<?php echo BASE_URL; ?>src/recipes/index.php?category=<?php echo urlencode($recipe['category']); ?>" class="tag"><?php echo $recipe['category']; ?></a>
+              <a href="<?php echo BASE_URL; ?>src/recipes/index.php?difficulty=<?php echo urlencode($recipe['difficulty']); ?>" class="tag"><?php echo $recipe['difficulty']; ?></a>
             </div>
             
             <!-- Button for the detail page -->
